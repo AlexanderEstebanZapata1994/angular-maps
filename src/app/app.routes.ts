@@ -11,16 +11,16 @@ export const routes: Routes = [
   },
   {
     path: 'markers',
-    title: 'Markers Map',
+    title: 'Markers',
     component: MarkersPage
   },
   {
     path: 'houses',
-    title: 'Houses Map',
+    title: 'Houses',
     component: HousesPage
   },
   {
     path: '**',
-    redirectTo: 'fullscreen'
+    redirectTo: 'markers'
   },
 ];

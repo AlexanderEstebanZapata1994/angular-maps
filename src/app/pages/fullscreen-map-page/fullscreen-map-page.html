@@ -1,13 +1,12 @@
 @if (apiLoaded()) {
 <div class="w-screen h-[calc(100vh-64px)]">
-  <google-map id="map" height="100%" width="100%" [center]="center()" [zoom]="zoom()"
-    (mapInitialized)="onMapReady($event)" (zoomChanged)="zoom.set(map.getZoom() ?? 12)"
-    (mapDragend)="moveEnd(map.getCenter())" #map>
+  <google-map id="map" height="100%" width="100%" [center]="center()" [zoom]="zoom() ?? 12"
+    (zoomChanged)="zoom.set(map.getZoom())" (mapDragend)="moveEnd(map.getCenter())" #map>
   </google-map>
 </div>
 <div id="controls"
   class="absolute bottom-10 left-5 bg-white/20 backdrop-blur-sm p-4 shadow rounded-2xl z-10 h-auto w-52 border shadow-blue-800/20 text-blue-950">
-  <input class="w-full accent-blue-950" type="range" min="1" max="20" [value]="zoom()"
+  <input class="w-full accent-blue-950" type="range" min="1" max="22" [value]="zoom()"
     (input)="zoom.set(+txtZoom.value)" #txtZoom>
   <h2 class="font-bold text-black mb-2">Zoom <small class="text-gray-500 font-normal">{{ zoom() }}</small></h2>
   <h2 class="font-bold text-black mb-2">Coordinates</h2>

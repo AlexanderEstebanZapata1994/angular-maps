@@ -1,1 +1,34 @@
-<p>markers-page works!</p>,
+@if (apiLoaded()) {
+<div class="w-screen h-[calc(100vh-64px)]">
+  <google-map mapId="DEMO_APP_ID" height="100%" width="100%" [center]="{lat: 4.5200, lng: -75.7103}" [zoom]="16"
+    (mapInitialized)="onMapReady($event)" #map>
+    @for(marker of markers(); track $index){
+    <map-advanced-marker [position]="marker.position" [title]="marker.label || ''" [draggable]="marker.draggable" />
+    }
+  </google-map>
+</div>
+} @else {
+<span class="loading loading-ring loading-xl"></span>
+}
+
+
+<section class="fixed w-65 rounded-2xl bg-white dark:bg-slate-800 top-35 left-3 shadow-lg p-5">
+  @if(markers().length === 0){
+  <h2 class="text-center text-xl font-semibold">No markers yet</h2>
+  <p class="text-center">Click on any place to add a marker</p>
+  } @else {
+  <h2 class="text-center text-xl font-semibold border-b pb-2">Markers added</h2>
+
+  <div class="flex flex-col pt-2">
+    @for(marker of markers(); track $index){
+    <div class="form-control">
+      <label class="label cursor-pointer flex flex-row justify-between p-1">
+        <span class="label-text w-48 truncate">{{marker.position | json}}</span>
+        <input type="radio" name="radio" class="radio checked:bg-red-500 dark:checked:bg-blue-900 checkbox-primary"
+          (click)="flyToMaker(marker.position)" />
+      </label>
+    </div>
+    }
+  </div>
+  }
+</section>
