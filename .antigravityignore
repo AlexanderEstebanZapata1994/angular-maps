@@ -1,0 +1,45 @@
+# Dependencies & Package Managers
+node_modules/
+.pnpm-store/
+vendor/
+
+# Angular & Frontend Builds
+.angular/
+dist/
+tmp/
+out-fo/
+*.tsbuildinfo
+
+# .NET & Backend Builds
+bin/
+obj/
+.vs/
+*.user
+*.suo
+appsettings.Development.json
+appsettings.Local.json
+
+# Version Control & IDE Metadata
+.git/
+.svn/
+.hg/
+.idea/
+.vscode/
+
+# Logs, Storage & Databases
+*.log
+*.sqlite
+*.db
+*.ldf
+*.mdf
+
+# Generated Assets & Minified Files
+*.min.js
+*.min.css
+*.map
+*.bundle.js
+coverage/
+
+# Environment Variables & Secrets
+.env
+.env.*

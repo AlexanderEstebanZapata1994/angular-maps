@@ -1,12 +1,14 @@
-import { AfterViewInit, Component, effect, ElementRef, signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { GoogleMap, MapAdvancedMarker, MapMarkerClusterer } from '@angular/google-maps';
 import { environment } from '../../../environments/environment';
 import { v4 as uuidv4 } from 'uuid'
-import { JsonPipe } from '@angular/common';
+import { DecimalPipe, JsonPipe } from '@angular/common';
+import { MapView } from '../../shared/components/navbar/map-view/map-view';
+import { Coordinates, MAP_SERVICE } from '../../interfaces/map-contract.interface';
+import { GoogleMapsAdapter } from '../../services/google-maps.adapter';
 
-const googlemapsApiKey = environment.API_KEY_MAPS;
 
-interface Marker {
+export interface Marker {
   id: string;
   position: Position;
   label?: string;
@@ -14,92 +16,41 @@ interface Marker {
   isActive: boolean
 }
 
-interface Position {
+export interface Position {
   lat: number;
   lng: number;
 }
 
 @Component({
   selector: 'app-markers-page',
-  imports: [GoogleMap, MapAdvancedMarker, JsonPipe],
+  imports: [MapView, JsonPipe, DecimalPipe],
   templateUrl: './markers-page.html',
+  providers: [
+    { provide: MAP_SERVICE, useClass: GoogleMapsAdapter }
+  ]
 })
-export class MarkersPage implements AfterViewInit {
+export class MarkersPage {
 
-  apiLoaded = signal<boolean>(false);
-  mapDiv = viewChild<ElementRef>('map')
-  map = signal<google.maps.Map | null>(null)
+  apiLoaded = signal(true)
+  private mapService = inject(MAP_SERVICE);
   markers = signal<Marker[]>([]);
 
-  ngOnInit() {
-    this.loadGoogleMapsApi()
-      .then(() => this.apiLoaded.set(true))
-      .catch((err) => console.error('Google Maps failed to load', err));
-  }
-
-  async ngAfterViewInit() {
-    this.map.set(this.mapDiv()?.nativeElement);
-  }
-
-  onMapReady(map: google.maps.Map) {
-    map.addListener('click', (event: google.maps.MapMouseEvent) => { this.onMapClick(event) })
-
-    this.map.set(map);
-  }
-
-  onMapClick(event: google.maps.MapMouseEvent) {
-    const coordinates: Position = {
-      lat: event.latLng!.lat(),
-      lng: event.latLng!.lng()
-    }
-
+  onMapClick(coordinates: Coordinates) {
     const newMarker: Marker = {
       id: uuidv4(),
       position: coordinates,
       label: 'New Marker',
       draggable: false,
       isActive: false
-    }
-
-    this.markers.update(currentMarkers => [newMarker, ...currentMarkers])
-    console.log(this.markers())
+    };
+    this.markers.update(curr => [newMarker, ...curr]);
+    this.mapService.addMarker(newMarker);
   }
 
-  flyToMaker(latLng: Position) {
-    if (!this.map()) return;
 
-    this.map()!.setCenter(latLng)
-  }
 
-  private loadGoogleMapsApi(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      // If the global 'google' object already exists, don't inject again
-      if (typeof google !== 'undefined' && google.maps) {
-        resolve();
-        return;
-      }
-
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${googlemapsApiKey}&libraries=marker`;
-      script.async = true;
-      script.defer = true;
-
-      script.onload = () => resolve();
-      script.onerror = (error) => reject(error);
-
-      document.head.appendChild(script);
-    });
-  }
-
-  deleteMarkers() {
-    this.markers.set([]);
-  }
-
-  addMarker() {
-  }
-
-  changeMarkers() {
-
+  flyToMarker(coords: Coordinates) {
+    this.mapService.setCenter(coords);
   }
 
 }
