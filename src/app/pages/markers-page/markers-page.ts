@@ -1,9 +1,7 @@
-import { AfterViewInit, Component, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
-import { GoogleMap, MapAdvancedMarker, MapMarkerClusterer } from '@angular/google-maps';
-import { environment } from '../../../environments/environment';
+import { Component, inject, signal } from '@angular/core';
 import { v4 as uuidv4 } from 'uuid'
 import { DecimalPipe, JsonPipe } from '@angular/common';
-import { MapView } from '../../shared/components/navbar/map-view/map-view';
+import { MapView } from '../../shared/components/map-view/map-view';
 import { Coordinates, MAP_SERVICE } from '../../interfaces/map-contract.interface';
 import { GoogleMapsAdapter } from '../../services/google-maps.adapter';
 
@@ -48,9 +46,13 @@ export class MarkersPage {
   }
 
 
-
   flyToMarker(coords: Coordinates) {
     this.mapService.setCenter(coords);
+  }
+
+  deleteMarker(markerId: string) {
+    this.mapService.removeMarker(markerId)
+    this.markers.set(this.markers().filter(marker => marker.id !== markerId));
   }
 
 }

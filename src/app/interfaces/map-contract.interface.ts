@@ -26,8 +26,9 @@ export interface IMapService {
   removeMarker(markerId: string): void;
   clearMarkers(): void;
   onMapClick(callback: (coords: Coordinates) => void): void;
+  onZoomChanged(callback: (zoom: number) => void): void;
   destroy(): void;
-  getLocationUser(): Promise<Coordinates | null>
+  getUserLocation(): Promise<Coordinates | null>
 }
 
 export const MAP_SERVICE = new InjectionToken<IMapService>('MAP_SERVICE');

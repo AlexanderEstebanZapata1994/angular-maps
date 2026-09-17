@@ -1,64 +1,44 @@
-import { AfterViewInit, Component, computed, ElementRef, signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, computed, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { DecimalPipe, JsonPipe } from '@angular/common';
-import { GoogleMap } from '@angular/google-maps';
-import { environment } from '../../../environments/environment';
+import { Coordinates, MAP_SERVICE } from '../../interfaces/map-contract.interface';
+import { GoogleMapsAdapter } from '../../services/google-maps.adapter';
+import { MapView } from '../../shared/components/map-view/map-view';
 
-
-const googlemapsApiKey = environment.API_KEY_MAPS;
 
 @Component({
   selector: 'app-fullscreen-map-page',
-  imports: [GoogleMap, JsonPipe, DecimalPipe],
-  templateUrl: './fullscreen-map-page.html'
+  imports: [MapView, JsonPipe, DecimalPipe],
+  templateUrl: './fullscreen-map-page.html',
+  providers: [
+    { provide: MAP_SERVICE, useClass: GoogleMapsAdapter }
+  ]
 })
-export class FullscreenMapPage implements AfterViewInit {
+export class FullscreenMapPage {
 
-  apiLoaded = signal<boolean>(false);
-  mapDiv = viewChild<ElementRef>('map')
-  map = signal<google.maps.Map | null>(null)
-  zoom = signal<number | undefined>(12);
-  coords = signal<google.maps.LatLngLiteral>({
-    lat: 4.5413,
-    lng: -75.6779,
+  private mapService = inject(MAP_SERVICE);
+  controls = viewChild<ElementRef<HTMLDivElement>>('controls');
+
+  apiLoaded = signal<boolean>(true);
+  zoom = signal<number>(12);
+  coords = signal<Coordinates>({
+    lat: 0,
+    lng: 0
   });
   center = computed(() => this.coords());
 
-  ngOnInit() {
-    this.loadGoogleMapsApi()
-      .then(() => this.apiLoaded.set(true))
-      .catch((err) => console.error('Google Maps failed to load', err));
+  async ngOnInit() {
+    const userCoords = await this.mapService.getUserLocation()
+    if (userCoords) this.coords.set(userCoords);
   }
 
-  ngAfterViewInit(): void {
-    if (!this.mapDiv()?.nativeElement) return;
-    this.map.set(this.mapDiv()?.nativeElement);
+  zoomEffect = effect(() => {
+    if (this.zoom() <= 0) return;
+    this.mapService.setZoom(this.zoom());
+  })
+
+
+  onZoomChanged(zoom: number) {
+    this.zoom.set(zoom)
   }
 
-  private loadGoogleMapsApi(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      // If the global 'google' object already exists, don't inject again
-      if (typeof google !== 'undefined' && google.maps) {
-        resolve();
-        return;
-      }
-
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${googlemapsApiKey}`;
-      script.async = true;
-      script.defer = true;
-
-      script.onload = () => resolve();
-      script.onerror = (error) => reject(error);
-
-      document.head.appendChild(script);
-    });
-  }
-
-
-  moveEnd(newCenter: google.maps.LatLng | undefined) {
-    this.coords.set({
-      lat: newCenter?.lat() ?? 0,
-      lng: newCenter?.lng() ?? 0
-    });
-  }
 }

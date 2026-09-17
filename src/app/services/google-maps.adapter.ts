@@ -1,7 +1,9 @@
 // src/app/services/google-maps.adapter.ts
 import { Injectable } from '@angular/core';
 import { Coordinates, IMapService, MapInitOptions, MapMarkerOptions } from '../interfaces/map-contract.interface';
-import { environment } from '../../environments/environment';
+import { GoogleMap, MapAdvancedMarker } from '@angular/google-maps';
+import { environment } from '../../environments/environment.development';
+
 
 @Injectable()
 export class GoogleMapsAdapter implements IMapService {
@@ -58,7 +60,13 @@ export class GoogleMapsAdapter implements IMapService {
     });
   }
 
-  getLocationUser(): Promise<Coordinates> {
+  onZoomChanged(callback: (zoom: number) => void) {
+    this.map?.addListener('zoom_changed', () => {
+      callback(this.map?.getZoom() ?? 12);
+    })
+  }
+
+  getUserLocation(): Promise<Coordinates> {
     if (navigator.geolocation) {
       return new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition((position) => {
