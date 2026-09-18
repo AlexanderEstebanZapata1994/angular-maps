@@ -33,6 +33,10 @@ export class MarkersPage {
   private mapService = inject(MAP_SERVICE);
   markers = signal<Marker[]>([]);
 
+  async ngOnInit() {
+    const userCoords = await this.mapService.getUserLocation()
+    if (userCoords) this.mapService.setCenter(userCoords);
+  }
   onMapClick(coordinates: Coordinates) {
     const newMarker: Marker = {
       id: uuidv4(),

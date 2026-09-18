@@ -20,7 +20,7 @@ export class MapView implements AfterViewInit, OnDestroy {
   async ngAfterViewInit() {
     await this.mapService.initMap({
       container: this.mapContainer().nativeElement,
-      center: (await this.mapService.getUserLocation()) ?? this.center(),
+      center: this.center(),
       zoom: this.zoom(),
     });
 

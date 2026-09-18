@@ -1,1 +1,26 @@
-<p>houses-page works!</p>,
+<section class="container mx-auto">
+  <h2 class="text-3xl font-bold mb-2">Locations saved</h2>
+  <h3 class="text-xl">{{ housesCount() | i18nPlural:houseCountMapping }} </h3>
+
+  <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
+    @for(house of houses(); track house.id; let i = $index){
+    <div class="card bg-base-100 dark:bg-secondary/20 w-96 shadow-sm">
+      <app-mini-map [coords]="house.lngLat" />
+      <div class="card-body">
+        <h2 class="card-title">
+          {{ house.name }}
+          @if(i === 0) {
+          <div class="badge badge-secondary">NEW</div>
+          }
+        </h2>
+        <p>{{house.description}}</p>
+        <div class="card-actions justify-end">
+          @for(tag of house.tags; track tag) {
+          <div class="badge badge-accent">{{ tag }}</div>
+          }
+        </div>
+      </div>
+    </div>
+    }
+  </section>
+</section>
