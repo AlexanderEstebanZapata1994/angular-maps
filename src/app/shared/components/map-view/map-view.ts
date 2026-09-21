@@ -1,5 +1,5 @@
 import { Component, ElementRef, inject, input, output, viewChild, AfterViewInit, OnDestroy } from '@angular/core';
-import { MAP_SERVICE, Coordinates } from '../../../interfaces/map-contract.interface';
+import { MAP_SERVICE, Coordinates, MapOtherOptions } from '../../../interfaces/map-contract.interface';
 
 @Component({
   selector: 'app-map-view',
@@ -12,6 +12,7 @@ export class MapView implements AfterViewInit, OnDestroy {
 
   center = input.required<Coordinates>();
   zoom = input.required<number>();
+  otherOptions = input<MapOtherOptions>();
   mapClick = output<Coordinates>();
   zoomChanged = output<number>();
 
@@ -22,6 +23,7 @@ export class MapView implements AfterViewInit, OnDestroy {
       container: this.mapContainer().nativeElement,
       center: this.center(),
       zoom: this.zoom(),
+      otherOptions: this.otherOptions()
     });
 
     this.mapService.onMapClick((coords) => this.mapClick.emit(coords));

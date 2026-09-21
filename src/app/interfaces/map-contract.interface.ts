@@ -16,6 +16,23 @@ export interface MapInitOptions {
   container: HTMLElement;
   center: Coordinates;
   zoom: number;
+  otherOptions?: MapOtherOptions;
+}
+
+export interface MapOtherOptions {
+  scrollwheel?: boolean;
+  disableDefaultUI?: boolean;
+  doubleclickZoom?: boolean;
+  fullscreenControl?: boolean;
+  zoomControl?: boolean;
+  scaleControl?: boolean;
+  streetViewControl?: boolean;
+  rotateControl?: boolean;
+  mapTypeControl?: boolean;
+  tiltInteractionEnabled?: boolean;
+  keyboardShortcuts?: boolean;
+  clickableIcons?: boolean;
+  gestureHandling?: 'auto' | 'none' | 'cooperative' | 'greedy';
 }
 
 export interface IMapService {

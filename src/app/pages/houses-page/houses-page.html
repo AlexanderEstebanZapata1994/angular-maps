@@ -1,10 +1,10 @@
-<section class="container mx-auto">
+<section class="w-full px-10 mt-4">
   <h2 class="text-3xl font-bold mb-2">Locations saved</h2>
   <h3 class="text-xl">{{ housesCount() | i18nPlural:houseCountMapping }} </h3>
 
-  <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
+  <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
     @for(house of houses(); track house.id; let i = $index){
-    <div class="card bg-base-100 dark:bg-secondary/20 w-96 shadow-sm">
+    <div class="card w-full rounded-2xl bg-base-100 dark:bg-secondary/20 shadow-sm">
       <app-mini-map [coords]="house.lngLat" />
       <div class="card-body">
         <h2 class="card-title">

@@ -1,5 +1,5 @@
 import { Component, inject, input } from '@angular/core';
-import { Coordinates, MAP_SERVICE } from '../../interfaces/map-contract.interface';
+import { Coordinates, MAP_SERVICE, MapOtherOptions } from '../../interfaces/map-contract.interface';
 import { GoogleMapsAdapter } from '../../services/google-maps.adapter';
 import { MapView } from '../../shared/components/map-view/map-view';
 import { Marker } from '../../pages/markers-page/markers-page';
@@ -20,9 +20,24 @@ export class MiniMap {
   height = input<string>('260px');
   width = input<string>('100%');
   coords = input.required<Coordinates>();
+  miniMapOptions: MapOtherOptions = {
+    scrollwheel: false,
+    disableDefaultUI: true,
+    doubleclickZoom: false,
+    fullscreenControl: false,
+    mapTypeControl: true,
+    zoomControl: false,
+    streetViewControl: false,
+    keyboardShortcuts: false,
+    scaleControl: false,
+    rotateControl: false,
+    gestureHandling: 'none'
+  };
 
   ngAfterViewInit() {
+    console.log("MiniMap init")
     this.mapService.setCenter(this.coords());
+    console.log(this.coords());
     const newMarker: Marker = {
       id: uuid(),
       position: this.coords(),

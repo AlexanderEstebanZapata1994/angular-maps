@@ -18,19 +18,7 @@ export class GoogleMapsAdapter implements IMapService {
       zoom: options.zoom,
       mapId: 'DEMO_MAP_ID', // Required for AdvancedMarkerElement
       colorScheme: google.maps.ColorScheme.FOLLOW_SYSTEM,
-      // scrollwheel: false,
-      // disableDefaultUI: false,
-      // fullscreenControl: false,
-      // zoomControl: false,
-      // scaleControl: false,
-      // streetViewControl: false,
-      // rotateControl: false,
-      // mapTypeControl: false,
-      // tiltInteractionEnabled: false,
-      // disableDoubleClickZoom: true,
-      // keyboardShortcuts: false,
-      // clickableIcons: false,
-      // gestureHandling: 'none',
+      ...options.otherOptions
     });
   }
 
