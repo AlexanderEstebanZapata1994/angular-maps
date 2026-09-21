@@ -1,0 +1,44 @@
+name: Deploy Angular App to Azure Static Web Apps
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout repository code
+      - name: Checkout code 
+        uses: actions/checkout@v4
+      
+      # 2. Authenticate to Azure using a Service Principal
+      - name: Authenticate to Azure 
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      # 3. Retrieve the secret from Azure Key Vault 
+      - name: Get Azure Key Vault Secret 
+        uses: azure/get-keyvault-secrets@v1
+        id: keyvault
+        with:
+          keyvault: 'angular-maps-kv'
+          secrets: 'GoogleMapsApiKey'
+      
+      # 4. Inject the secret into environment.ts before building
+      - name: Inject API Key into environment file
+        run: |
+          sed -i 's/GOOGLE_MAPS_KEY_PLACEHOLDER/${{ steps.keyvault-secret.outputs.secret-value }}/g' src/environments/environment.ts
+
+      # 5. Build and Deploy to Azure Static Web Apps
+      - name: Build And Deploy 🚀
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_HAPPY_MOSS_04DC2470F }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: 'upload'
+          app_location: '/'            # App source code path
+          output_location: 'dist/angular-maps' # Compiled output path
+      
