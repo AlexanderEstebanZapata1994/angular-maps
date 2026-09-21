@@ -4,6 +4,7 @@ import { DecimalPipe, JsonPipe } from '@angular/common';
 import { MapView } from '../../shared/components/map-view/map-view';
 import { Coordinates, MAP_SERVICE } from '../../interfaces/map-contract.interface';
 import { GoogleMapsAdapter } from '../../services/google-maps.adapter';
+import { CustomSpinner } from '../../shared/components/custom-spinner/custom-spinner';
 
 
 export interface Marker {
@@ -21,7 +22,7 @@ export interface Position {
 
 @Component({
   selector: 'app-markers-page',
-  imports: [MapView, JsonPipe, DecimalPipe],
+  imports: [MapView, CustomSpinner, JsonPipe, DecimalPipe],
   templateUrl: './markers-page.html',
   providers: [
     { provide: MAP_SERVICE, useClass: GoogleMapsAdapter }
@@ -29,9 +30,9 @@ export interface Position {
 })
 export class MarkersPage {
 
-  apiLoaded = signal(true)
   private mapService = inject(MAP_SERVICE);
   markers = signal<Marker[]>([]);
+  mapLoaded = signal<boolean>(false)
 
   async ngOnInit() {
     const userCoords = await this.mapService.getUserLocation()
@@ -47,6 +48,10 @@ export class MarkersPage {
     };
     this.markers.update(curr => [newMarker, ...curr]);
     this.mapService.addMarker(newMarker);
+  }
+
+  onMapLoaded() {
+    this.mapLoaded.set(true)
   }
 
 

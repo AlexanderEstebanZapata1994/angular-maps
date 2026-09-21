@@ -1,8 +1,7 @@
-@if (apiLoaded()) {
 <div class="w-screen h-[60vh] sm:h-[calc(100vh-64px)]">
-  <app-map-view [center]="{lat: 0, lng: 0}" [zoom]="14" (mapClick)="onMapClick($event)">
+  <app-map-view [center]="{lat: 0, lng: 0}" [zoom]="14" (mapClick)="onMapClick($event)" (mapReady)="onMapLoaded()">
   </app-map-view>
-
+  @if (mapLoaded()) {
   <section class="h-[calc(40vh-64px)] p-2 w-full
     sm:fixed sm:w-96 sm:rounded-2xl sm:bottom-10 left-3 sm:border-2 sm:shadow-lg
     backdrop-blur-sm text-black dark:text-white bg-white/20 dark:bg-slate-800">
@@ -26,7 +25,9 @@
     </div>
     }
   </section>
+  }
 </div>
-} @else {
-<span class="loading loading-ring loading-xl"></span>
+
+@if(!mapLoaded()) {
+<app-custom-spinner label="Loading map..." />
 }

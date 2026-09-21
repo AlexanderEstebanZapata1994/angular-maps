@@ -2,3 +2,7 @@
   <app-map-view [otherOptions]="miniMapOptions" [center]="coords()" [zoom]="15" (mapReady)="onMapReady()">
   </app-map-view>
 </section>
+
+@if(!mapLoaded()) {
+<app-custom-spinner label="Loading Map..."></app-custom-spinner>
+}

@@ -18,8 +18,9 @@ export class FullscreenMapPage {
   private mapService = inject(MAP_SERVICE);
   controls = viewChild<ElementRef<HTMLDivElement>>('controls');
 
-  apiLoaded = signal<boolean>(true);
+
   zoom = signal<number>(12);
+  mapLoaded = signal<boolean>(false);
   coords = signal<Coordinates>({ lat: 0, lng: 0 });
   center = computed(() => this.coords());
 
@@ -35,6 +36,10 @@ export class FullscreenMapPage {
     if (this.zoom() <= 0) return;
     this.mapService.setZoom(this.zoom());
   })
+
+  onMapLoaded() {
+    this.mapLoaded.set(true)
+  }
 
 
   onZoomChanged(zoom: number) {

@@ -1,14 +1,15 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { Coordinates, MAP_SERVICE, MapOtherOptions } from '../../interfaces/map-contract.interface';
 import { GoogleMapsAdapter } from '../../services/google-maps.adapter';
 import { MapView } from '../../shared/components/map-view/map-view';
 import { Marker } from '../../pages/markers-page/markers-page';
 import { v4 as uuid } from 'uuid';
+import { CustomSpinner } from '../../shared/components/custom-spinner/custom-spinner';
 
 
 @Component({
   selector: 'app-mini-map',
-  imports: [MapView],
+  imports: [MapView, CustomSpinner],
   templateUrl: './mini-map.html',
   providers: [{
     provide: MAP_SERVICE, useClass: GoogleMapsAdapter
@@ -20,6 +21,7 @@ export class MiniMap {
   height = input<string>('260px');
   width = input<string>('100%');
   coords = input.required<Coordinates>();
+  mapLoaded = signal(false);
   miniMapOptions: MapOtherOptions = {
     scrollwheel: false,
     disableDefaultUI: true,
@@ -44,5 +46,6 @@ export class MiniMap {
 
     };
     this.mapService.addMarker(newMarker);
+    this.mapLoaded.set(true);
   }
 }
