@@ -15,6 +15,7 @@ export class MapView implements AfterViewInit, OnDestroy {
   otherOptions = input<MapOtherOptions>();
   mapClick = output<Coordinates>();
   zoomChanged = output<number>();
+  mapReady = output<void>();
 
   private mapContainer = viewChild.required<ElementRef<HTMLDivElement>>('mapContainer');
 
@@ -25,6 +26,8 @@ export class MapView implements AfterViewInit, OnDestroy {
       zoom: this.zoom(),
       otherOptions: this.otherOptions()
     });
+
+    this.mapReady.emit();
 
     this.mapService.onMapClick((coords) => this.mapClick.emit(coords));
     this.mapService.onZoomChanged((zoom: number) => this.zoomChanged.emit(zoom));

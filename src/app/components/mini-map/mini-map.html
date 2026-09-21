@@ -1,4 +1,4 @@
 <section [style.height]="height()" [style.width]="width()">
-  <app-map-view [otherOptions]="miniMapOptions" [center]="coords()" [zoom]="15">
+  <app-map-view [otherOptions]="miniMapOptions" [center]="coords()" [zoom]="15" (mapReady)="onMapReady()">
   </app-map-view>
 </section>

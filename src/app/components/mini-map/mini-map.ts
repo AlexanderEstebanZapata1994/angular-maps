@@ -34,10 +34,8 @@ export class MiniMap {
     gestureHandling: 'none'
   };
 
-  ngAfterViewInit() {
-    console.log("MiniMap init")
+  onMapReady() {
     this.mapService.setCenter(this.coords());
-    console.log(this.coords());
     const newMarker: Marker = {
       id: uuid(),
       position: this.coords(),
