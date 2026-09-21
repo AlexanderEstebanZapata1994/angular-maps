@@ -1,6 +1,6 @@
 @if (apiLoaded()) {
 <div class="w-screen h-[calc(100vh-64px)]">
-  <app-map-view [center]="{lat: 0, lng: 0}" [zoom]="zoom()" (zoomChanged)="onZoomChanged($event)">
+  <app-map-view [center]="coords()" [zoom]="zoom()" (zoomChanged)="onZoomChanged($event)">
   </app-map-view>
 </div>
 

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, computed, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { DecimalPipe, JsonPipe } from '@angular/common';
 import { Coordinates, MAP_SERVICE } from '../../interfaces/map-contract.interface';
 import { GoogleMapsAdapter } from '../../services/google-maps.adapter';
@@ -20,16 +20,16 @@ export class FullscreenMapPage {
 
   apiLoaded = signal<boolean>(true);
   zoom = signal<number>(12);
-  coords = signal<Coordinates>({
-    lat: 0,
-    lng: 0
-  });
+  coords = signal<Coordinates>({ lat: 0, lng: 0 });
   center = computed(() => this.coords());
 
-  async ngOnInit() {
+  coordsEffect = effect(async () => {
     const userCoords = await this.mapService.getUserLocation()
-    if (userCoords) this.coords.set(userCoords);
-  }
+    if (userCoords) {
+      this.coords.set(userCoords)
+      this.mapService.setCenter(userCoords)
+    }
+  })
 
   zoomEffect = effect(() => {
     if (this.zoom() <= 0) return;
