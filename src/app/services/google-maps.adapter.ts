@@ -10,6 +10,8 @@ export class GoogleMapsAdapter implements IMapService {
   private map: google.maps.Map | null = null;
   private markersMap = new Map<string, google.maps.marker.AdvancedMarkerElement>();
 
+  private static sdkPromise: Promise<void> | null = null
+
   async initMap(options: MapInitOptions): Promise<void> {
     await this.loadSdk();
 
@@ -89,7 +91,10 @@ export class GoogleMapsAdapter implements IMapService {
 
   private loadSdk(): Promise<void> {
     if (typeof google !== 'undefined' && google.maps) return Promise.resolve();
-    return new Promise((resolve, reject) => {
+
+    if (GoogleMapsAdapter.sdkPromise) return GoogleMapsAdapter.sdkPromise;
+
+    GoogleMapsAdapter.sdkPromise = new Promise((resolve, reject) => {
       const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${environment.API_KEY_MAPS}&libraries=marker`;
       script.async = true;
@@ -98,5 +103,7 @@ export class GoogleMapsAdapter implements IMapService {
       script.onerror = (err) => reject(err);
       document.head.appendChild(script);
     });
+
+    return GoogleMapsAdapter.sdkPromise;
   }
 }
