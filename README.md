@@ -1,6 +1,10 @@
 # Google Maps Playground in Angular
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Azure%20Static%20Web%20Apps-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white)](https://happy-moss-04dc2470f.5.azurestaticapps.net/)
+
 An interactive Angular playground built to explore Google Maps Platform features and demonstrate an **Adapter Pattern (Contract-Based Architecture)** that decouples UI components from any specific map provider (Google Maps, Mapbox, Leaflet, MapLibre, etc.).
+
+🌐 **Live Demo (Azure SWA):** [https://happy-moss-04dc2470f.5.azurestaticapps.net](https://happy-moss-04dc2470f.5.azurestaticapps.net/)
 
 ---
 
@@ -10,7 +14,68 @@ This project was built as a dedicated playground for experimenting with **Google
 
 - **Interactive Playground**: Experiment with map interactions, custom controls, dynamic marker management, zoom events, and responsive mini-map cards for property/real-estate listings.
 - **Provider Decoupling**: Prevent vendor lock-in by abstracting map operations behind an interface contract, enabling seamless transitions or side-by-side implementations with other mapping providers.
-- **Modern Angular Showcase**: Built with Angular 22+, utilizing modern Signals, `inject()`, input/output functions, Tailwind CSS, and DaisyUI.
+- **Modern Angular Showcase**: Built with Angular 22+, utilizing modern Signals, `inject()`, input/output functions, Tailwind CSS, and DaisyUI components.
+- **Cloud Deployment & CI/CD Practice**: Learn and apply deployment workflows using **Azure Static Web Apps**, **GitHub Actions**, **Azure Key Vault**, and Service Principal authentication.
+
+---
+
+## 🌐 Routing & Hash Strategy (`HashLocationStrategy`)
+
+To ensure seamless client-side routing on static hosting environments like Azure Static Web Apps without server-side rewrite issues on direct page refreshes, the application configures Angular's **Hash Location Strategy** in [`app.config.ts`](file:///c:/Users/esteb/OneDrive/Documentos/Personal%20Projects/angular-course/angular-maps/src/app/app.config.ts):
+
+```typescript
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideBrowserGlobalErrorListeners(),
+    provideRouter(routes),
+    provideHttpClient(),
+
+    // Hash Strategy (e.g. /#/markers)
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy
+    }
+  ]
+};
+```
+
+### Why Hash Strategy?
+- Direct links like `/#/markers`, `/#/fullscreen`, or `/#/properties` route directly within the client app without requiring fallback rewrite rules (`staticwebapp.config.json` navigation fallbacks).
+- Prevents 404 HTTP errors when refreshing deep URLs on static hosts.
+
+---
+
+## 🚀 CI/CD & Azure Deployment Pipeline
+
+This personal project serves as hands-on practice implementing a secure continuous integration and continuous deployment pipeline using **GitHub Actions** and **Microsoft Azure**:
+
+```
+ ┌──────────────────────┐        ┌─────────────────────────┐        ┌─────────────────────────┐
+ │   git push master    │───────►│  GitHub Actions Runner  │───────►│     Azure Key Vault     │
+ └──────────────────────┘        │                         │        │  ('angular-maps-kv')    │
+                                 │  1. Checkout repo       │        └────────────┬────────────┘
+                                 │  2. Azure Login (SPN)   │                     │
+                                 │  3. Fetch Google API Key│◄────────────────────┘
+                                 │  4. Sed-replace env file│
+                                 │  5. Build & Deploy      │───────►┌─────────────────────────┐
+                                 └─────────────────────────┘        │ Azure Static Web Apps   │
+                                                                    │ (happy-moss-04dc2470f)  │
+                                                                    └─────────────────────────┘
+```
+
+### Key Workflow Highlights ([`azure-static-web-apps.yml`](https://github.com/AlexanderEstebanZapata1994/angular-maps/blob/master/.github/workflows/azure-static-web-apps.yml))
+
+1. **Trigger on Push**: Automatically runs on every push to the `master` branch.
+2. **Azure Service Principal Authentication**: Uses `azure/login@v2` with `AZURE_CREDENTIALS` stored in GitHub repository secrets for secure, non-interactive authentication.
+3. **Secret Management with Azure Key Vault**:
+   - Fetches the production `GoogleMapsApiKey` dynamically from Azure Key Vault (`angular-maps-kv`) via `azure/get-keyvault-secrets@v1`.
+   - Prevents hardcoding or exposing sensitive API keys in source control.
+4. **Environment Injection**:
+   - Replaces the `GOOGLE_MAPS_KEY_PLACEHOLDER` in `src/environments/environment*.ts` at build time inside the runner.
+5. **Static Web Apps Deployment**:
+   - Uses `Azure/static-web-apps-deploy@v1` to compile the Angular application and deploy the output bundle (`dist/angular-maps/browser`) to Azure Static Web Apps.
 
 ---
 
