@@ -10,27 +10,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # 1. Checkout repository code
-      - name: Checkout code 
+      - name: Checkout code
         uses: actions/checkout@v4
-      
+
       # 2. Authenticate to Azure using a Service Principal
-      - name: Authenticate to Azure 
+      - name: Authenticate to Azure
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
-      # 3. Retrieve the secret from Azure Key Vault 
-      - name: Get Azure Key Vault Secret 
+
+      # 3. Retrieve the secret from Azure Key Vault
+      - name: Get Azure Key Vault Secret
         uses: azure/get-keyvault-secrets@v1
         id: keyvault
         with:
           keyvault: 'angular-maps-kv'
           secrets: 'GoogleMapsApiKey'
-      
+
+      # DEBUG STEP 1: Verify key length (without exposing the raw secret in logs)
+      - name: Debug Secret Retrieval
+        run: |
+          KEY="${{ steps.keyvault.outputs.GoogleMapsApiKey }}"
+          echo "Secret length is: ${#KEY}"
+          if [ -z "$KEY" ]; then
+            echo "ERROR: Secret retrieved is EMPTY!"
+            exit 1
+          fi
+
       # 4. Inject the secret into environment.ts before building
       - name: Inject API Key into environment file
         run: |
-          sed -i 's/GOOGLE_MAPS_KEY_PLACEHOLDER/${{ steps.keyvault-secret.outputs.secret-value }}/g' src/environments/environment.ts
+          sed -i 's|GOOGLE_MAPS_KEY_PLACEHOLDER|${{ steps.keyvault.outputs.GoogleMapsApiKey }}|g' src/environments/environment.ts
+
+      # DEBUG STEP 2: Inspect environment.ts to verify sed replacement
+      - name: Verify Injected File
+        run: |
+          echo "Checking environment.ts contents after sed replacement:"
+          cat src/environments/environment.ts
 
       # 5. Build and Deploy to Azure Static Web Apps
       - name: Build And Deploy 🚀
@@ -41,4 +57,3 @@ jobs:
           action: 'upload'
           app_location: '/'            # App source code path
           output_location: 'dist/angular-maps/browser' # Compiled output path
-      
