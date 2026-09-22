@@ -40,5 +40,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: 'upload'
           app_location: '/'            # App source code path
-          output_location: 'dist/angular-maps' # Compiled output path
+          output_location: 'dist/angular-maps/browser' # Compiled output path
       
