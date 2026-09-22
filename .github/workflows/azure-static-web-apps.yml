@@ -40,7 +40,7 @@ jobs:
       # 4. Inject the secret into environment.ts before building
       - name: Inject API Key into environment file
         run: |
-          sed -i 's|GOOGLE_MAPS_KEY_PLACEHOLDER|${{ steps.keyvault.outputs.GoogleMapsApiKey }}|g' src/environments/environment.ts
+          sed -i 's|GOOGLE_MAPS_KEY_PLACEHOLDER|${{ steps.keyvault.outputs.GoogleMapsApiKey }}|g' src/environments/environment*.ts
 
       # DEBUG STEP 2: Inspect environment.ts to verify sed replacement
       - name: Verify Injected File
